@@ -1,0 +1,14 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="4.6mm" height="4.6mm" viewBox="0 0 13.03 13.03">
+  <title>stocAttn</title>
+  <g>
+    <g>
+      <circle cx="6.52" cy="6.52" r="6.39" style="fill: #121212"/>
+      <path d="M6.52.25A6.27,6.27,0,1,1,.25,6.52,6.27,6.27,0,0,1,6.52.25m0-.25A6.52,6.52,0,1,0,13,6.52,6.52,6.52,0,0,0,6.52,0Z" transform="translate(0 0)" style="fill: #231f20"/>
+    </g>
+    <g>
+      <path d="M6.52,11.81a5.3,5.3,0,1,1,5.29-5.29A5.3,5.3,0,0,1,6.52,11.81Z" transform="translate(0 0)" style="fill: #393839"/>
+      <path d="M6.52,1.72a4.8,4.8,0,1,1-4.8,4.8,4.8,4.8,0,0,1,4.8-4.8m0-1a5.8,5.8,0,1,0,5.79,5.8A5.8,5.8,0,0,0,6.52.72Z" transform="translate(0 0)" style="fill: #333132"/>
+    </g>
+    <path d="M6.52,3.28h0a.37.37,0,0,1-.39-.36V1.38c0-.21.17-.25.39-.25h0c.21,0,.38,0,.38.25V2.92A.37.37,0,0,1,6.52,3.28Z" transform="translate(0 0)" style="fill: #bec0c2"/>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="7.5mm" height="7.5mm" viewBox="0 0 21.26 21.26">
+  <title>stocButton</title>
+  <g>
+    <g>
+      <path d="M10.63,20.76A10.13,10.13,0,1,1,20.76,10.63,10.14,10.14,0,0,1,10.63,20.76Z" transform="translate(0 0)" style="fill: #6d6e71"/>
+      <path d="M10.63,1A9.63,9.63,0,1,1,1,10.63,9.64,9.64,0,0,1,10.63,1m0-1A10.63,10.63,0,1,0,21.26,10.63,10.63,10.63,0,0,0,10.63,0Z" transform="translate(0 0)" style="fill: #1a1a1a"/>
+    </g>
+    <g>
+      <path d="M10.63,19.73a9.1,9.1,0,1,1,9.1-9.1A9.11,9.11,0,0,1,10.63,19.73Z" transform="translate(0 0)" style="fill: #6d6e71"/>
+      <path d="M10.63,2.53a8.1,8.1,0,1,1-8.1,8.1,8.1,8.1,0,0,1,8.1-8.1m0-2a10.1,10.1,0,1,0,10.1,10.1A10.1,10.1,0,0,0,10.63.53Z" transform="translate(0 0)" style="fill: #0d0d0d"/>
+    </g>
+  </g>
+</svg>
