@@ -44,11 +44,11 @@ struct Polydelay : Module {
 
 	Polydelay() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(TIME_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(TIME_PARAM, 0.f, 1.f, 0.5f, "");
 		configParam(TIMEL_CV_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(TIMER_CV_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(SPREAD_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(MIX_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(MIX_PARAM, 0.f, 1.f, 0.5f, "");
 		configParam(FEED_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(MIX_CV_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(FEED_CV_PARAM, -1.f, 1.f, 0.f, "");

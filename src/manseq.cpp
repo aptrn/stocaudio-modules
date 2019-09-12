@@ -49,8 +49,8 @@ struct Manseq : Module {
 		configParam(REC_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(MAN_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CLEAR_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(ROTATE_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(STEPS_PARAM, 1.f, 32.f, 5.f, "");
+		configParam(ROTATE_PARAM, 0.f, 32.f, 16.f, "");
+		configParam(STEPS_PARAM, 1.f, 32.f, 16.f, "");
 		configParam(ROTATE_CV_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(STEPS_CV_PARAM, -1.f, 1.f, 0.f, "");
 

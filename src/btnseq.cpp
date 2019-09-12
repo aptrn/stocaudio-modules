@@ -29,21 +29,17 @@ struct Btnseq : Module {
 		NUM_LIGHTS
 	};
 
-	
 	// Expander
 	float consumerMessage[PASSTHROUGH_RIGHT_VARIABLE_COUNT] = {};// this module must read from here
 	float producerMessage[PASSTHROUGH_RIGHT_VARIABLE_COUNT] = {};// mother will write into here
 
-
-
-
 	Btnseq() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for (int i = 0; i < 8; i++){
-		configParam(B_PARAM +i, 0.f, 1.f, 0.f, "");
+			configParam(B_PARAM +i, 0.f, 1.f, 0.f, "");
 		}
-		configParam(STEPS_PARAM, 1.f, 8.f, 4.f, "");
-		configParam(ROTATE_PARAM, 0.f, 7.f, 0.f, "");
+		configParam(STEPS_PARAM, 0.f, 8.f, 4.f, "");
+		configParam(ROTATE_PARAM, 0.f, 8.f, 0.f, "");
 		configParam(STEPS_CV_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(ROTATE_CV_PARAM, -1.f, 1.f, 0.f, "");
 
