@@ -6,7 +6,7 @@ Modules for [VCV Rack](https://github.com/VCVRack/Rack), open-source Eurorack-st
 
 
 ## Building
-Make dependecies with:
+Build dependencies loceally:
 
 ```bash
 make dep
