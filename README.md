@@ -3,7 +3,7 @@
 Modules for [VCV Rack](https://github.com/VCVRack/Rack), open-source Eurorack-style virtual modular synthesizer.
 
 ## Plugins
-![](stocaudio-modules.PNG)
+![](res/stocaudio-modules.PNG)
 
 
 ## Building
