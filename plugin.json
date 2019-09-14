@@ -75,13 +75,12 @@
       ]
     },
     {
-      "slug": "Slew",
-      "name": "Slew",
+      "slug": "Polyslew",
+      "name": "Polyslew",
       "description": "Polyphonic Slew Limiter",
       "tags": [
         "Utility",
-        "Polyphonic",
-        "Slew Limiter"
+        "Polyphonic"
       ]
     }
   ]

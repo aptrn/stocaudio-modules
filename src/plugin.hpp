@@ -11,7 +11,7 @@ extern Model *modelBtnseq;
 extern Model *modelClock;
 extern Model *modelPolydelay;
 extern Model *modelSpread;
-extern Model *modelSlew;
+extern Model *modelPolyslew;
 
 // Declare each Model, defined in each module source file
 // extern Model *modelMyModule;
