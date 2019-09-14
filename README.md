@@ -73,12 +73,8 @@ This is a polyphonic fork of [Befaco's Slew Limiter](https://github.com/VCVRack/
 
 
 ## Building
-Build dependencies locally:
 
-```bash
-make dep
-```
-then build plugins using:
+Build plugins using:
 
 ```bash
 make
