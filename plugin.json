@@ -6,9 +6,9 @@
   "author": "Alessandro Petrone",
   "authorEmail": "contact@stocaudio.com",
   "authorUrl": "stocaudio.com",
-  "pluginUrl": "stocaudio.com/vcv",
-  "manualUrl": "stocaudio.com/vcv/manual",
-  "sourceUrl": "",
+  "pluginUrl": "https://github.com/aptrn/stocaudio-modules",
+  "manualUrl": "https://github.com/aptrn/stocaudio-modules",
+  "sourceUrl": "https://github.com/aptrn/stocaudio-modules",
   "donateUrl": "paypal.me/aptrn",
   "modules": [
     {
