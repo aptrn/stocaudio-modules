@@ -38,7 +38,7 @@ This is a polyphonic button driven sequencer.
 
 ### Polyclock
 
-This is a polyphonic clock multiplier/divider with Swing
+This is a polyphonic clock multiplier/divider with Swin
 
 
 - Channel number is set by the Clock input
@@ -70,6 +70,13 @@ This is a polyphonic fork of [Befaco's Slew Limiter](https://github.com/VCVRack/
 - Channel number is set by the In input
 - Shape sets slew shape from linear to logarithmic
 - Up and Down do set slew time when voltage is rising or falling
+
+## Expanders
+
+Polyturing, Man Seq, Btn Seq, Polyclock and Polyslew modules do support a cascading expander messaging system.
+Every module recieves data from modules on the left side and send to ones on the right side.
+- Man Seq, Btn Seq and Polyclock do share output triggers as clock info, Polyturing shares incoming clock
+- Polyturing shares voltage out with Polyclock as prerouted modulation on the Mult/Div parameter and with Polyslew as input
 
 
 ## Building
