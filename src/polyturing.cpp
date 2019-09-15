@@ -125,7 +125,7 @@ struct Polyturing : Module {
 					currentStep[c]++;
 					int steps = params[STEP_PARAM].getValue() + (inputs[STEP_CV].getVoltage() * params[STEP_CV_PARAM].getValue()) + (now * params[STEP_RAND_PARAM].getValue());
 					if (currentStep[c] > steps) currentStep[c] = 0; 
-						if (inputs[MAIN_INPUT].isConnected()) in = (c < inputs[MAIN_INPUT].getChannels()) ? inputs[MAIN_INPUT].getVoltage(c) : inputs[MAIN_INPUT].getVoltage(c % inputs[MAIN_INPUT].getChannels()); 
+						if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getVoltage(c % inputs[MAIN_INPUT].getChannels()); 
 						else in = 2.0 * random::normal();
 						if (random::uniform() > (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()))){
 							out[c] = in;
