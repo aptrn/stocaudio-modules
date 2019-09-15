@@ -81,6 +81,12 @@ Every module recieves data from modules on the left side and send to ones on the
 
 ## Building
 
+Build deps using:
+
+```bash
+make dep
+```
+
 Build plugins using:
 
 ```bash
