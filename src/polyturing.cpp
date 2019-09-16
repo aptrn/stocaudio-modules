@@ -1,6 +1,6 @@
 #include "plugin.hpp"
 
-#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 18
+#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 33
 
 
 struct Polyturing : Module {
@@ -99,33 +99,36 @@ struct Polyturing : Module {
 	}
 
 	void process(const ProcessArgs &args) override{
-		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq);
-		bool clockConnected = 0;
-		int clockChannels = 0;
-		float clockInput[16] = {0};
+
+		//Expander In
+		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq || leftExpander.module->model == modelPolyslew);
+		bool messagePresent = false;
+		int messageChannels = 0;
+		float messageClock[16] = {0};
+		float messageCV[16] = {0};
 
 		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;
-			clockConnected = messagesFromMother[0];
-			if (clockConnected){
-				clockChannels = messagesFromMother[0];
-				for(int i = 0; i < clockChannels; i++) clockInput[i] = messagesFromMother[i + 2];
+			messagePresent = messagesFromMother[0] > 0 ? true : false;
+			if (messagePresent){
+				messageChannels = messagesFromMother[0];
+				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
+				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + messageChannels];
 			}
 		}
 	
-		int channels =  clockConnected ? clockChannels : inputs[CLOCK_INPUT].getChannels();
+		int channels =  messagePresent ? messageChannels : inputs[CLOCK_INPUT].getChannels();
 		outputs[MAIN_OUTPUT].setChannels(channels);
-		if (clockConnected || inputs[CLOCK_INPUT].isConnected()){
+		if (messagePresent || inputs[CLOCK_INPUT].isConnected()){
 			for (int c = 0; c < channels; c++){
-				float clock = clockConnected ? clockInput[c] : inputs[CLOCK_INPUT].getVoltage(c % inputs[CLOCK_INPUT].getChannels()); 
+				float clock = !inputs[CLOCK_INPUT].isConnected() ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c); 
 				if (clock_input[c].process(rescale(clock, 0.2f, 1.7f, 0.0f, 1.0f))){
-				
-						led_pulse.trigger(0.1f);
-				
+					led_pulse.trigger(0.1f);
 					currentStep[c]++;
 					int steps = params[STEP_PARAM].getValue() + (inputs[STEP_CV].getVoltage() * params[STEP_CV_PARAM].getValue()) + (now * params[STEP_RAND_PARAM].getValue());
 					if (currentStep[c] > steps) currentStep[c] = 0; 
-						if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getVoltage(c % inputs[MAIN_INPUT].getChannels()); 
+						if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getVoltage(c); 
+						else if (messagePresent && (leftExpander.module->model == modelPolyslew || leftExpander.module->model == modelPolyturing)) in = messageCV[c];
 						else in = 2.0 * random::normal();
 						if (random::uniform() > (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()))){
 							out[c] = in;
@@ -147,15 +150,15 @@ struct Polyturing : Module {
 		}
 		lights[MANUAL_LED].setBrightness(led_pulse.process(1.0 / 44100));
 
-		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing || rightExpander.module->model == modelClock || rightExpander.module->model == modelBtnseq || rightExpander.module->model == modelManseq));
+		//Expander Out
+		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing || rightExpander.module->model == modelClock || rightExpander.module->model == modelBtnseq || rightExpander.module->model == modelManseq || rightExpander.module->model == modelPolyslew));
 		if(rightExpanderPresent) {
 			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
-			messageToSlave[0] = clockConnected ? clockChannels : inputs[CLOCK_INPUT].getChannels();
-			messageToSlave[1] = out[0];
-			for(int i = 0; i < channels; i++) messageToSlave[i + 2] = clockConnected ? clockInput[i] : inputs[CLOCK_INPUT].getVoltage(i);
+			messageToSlave[0] = channels;
+			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
+			for(int c = 0; c < channels; c++) messageToSlave[c + channels] = out[c];
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
-		
 	}
 };
 
@@ -163,12 +166,6 @@ struct PolyturingWidget : ModuleWidget {
 	PolyturingWidget(Polyturing *module) {
 		setModule(module);
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/polyturing.svg")));
-/*
-		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-*/	
 		addChild(createWidgetCentered<stocScrew>(mm2px(Vec(38.728, 1.941))));
 		addChild(createWidgetCentered<stocScrew>(mm2px(Vec(2.265, 1.945))));
 		addChild(createWidgetCentered<stocScrew>(mm2px(Vec(2.265, 126.267))));

@@ -1,5 +1,5 @@
 #include "plugin.hpp"
-#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 18
+#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 33
 
 
 struct Btnseq : Module {
@@ -90,22 +90,24 @@ struct Btnseq : Module {
 		}
 	}
 	void process(const ProcessArgs &args) override {
-		
+		//Expander In
 		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq);
-		bool clockConnected = 0;
-		int clockChannels = 0;
-		float clockInput[16] = {0};
+		bool messagePresent = false;
+		int messageChannels = 0;
+		float messageClock[16] = {0};
+		float messageCV[16] = {0};
 
-		if(motherPresent && !inputs[CLOCK_INPUT].isConnected()) {
+		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;
-			clockConnected = messagesFromMother[0];
-			if (clockConnected){
-				clockChannels = messagesFromMother[0];
-				for(int i = 0; i < clockChannels; i++) clockInput[i] = messagesFromMother[i +2];
+			messagePresent = messagesFromMother[0] > 0 ? true : false;
+			if (messagePresent){
+				messageChannels = messagesFromMother[0];
+				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
+				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + messageChannels];
 			}
 		}
 
-		int channels = clockConnected ? clockChannels : inputs[CLOCK_INPUT].getChannels();
+		int channels = messagePresent ? messageChannels : inputs[CLOCK_INPUT].getChannels();
 
 		outputs[TRIG_OUTPUT].setChannels(channels);
 		outputs[GATE_OUTPUT].setChannels(channels);
@@ -132,9 +134,9 @@ struct Btnseq : Module {
 		int firstStep = rotate;
 		int lastStep = (rotate + steps) - 1 % steps;
 		
-		if (inputs[CLOCK_INPUT].isConnected() || clockConnected){
+		if (inputs[CLOCK_INPUT].isConnected() || messagePresent){
 			for(int c = 0; c < channels; c++){
-				float clock = clockConnected ? clockInput[c] : inputs[CLOCK_INPUT].getVoltage(c);
+				float clock = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
 				if (clock_input[c].process(rescale(clock, 0.2f, 1.7f, 0.0f, 1.0f))) {
 					ledPulse.trigger(0.1f);
 					count[c]++;
@@ -173,12 +175,13 @@ struct Btnseq : Module {
 		}
 		lights[MAN_LIGHT].setBrightness(ledPulse.process(1.0 / 44100));
 
+		//Expander Out
 		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing || rightExpander.module->model == modelClock || rightExpander.module->model == modelBtnseq || rightExpander.module->model == modelManseq));
 		if(rightExpanderPresent) {
 			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
-			messageToSlave[0] = clockConnected ? clockChannels : inputs[CLOCK_INPUT].getChannels();
-			messageToSlave[1] = channels;
-			for(int i = 0; i < channels; i++) messageToSlave[i + 2] = (out[i] ? 10.f : 0.0f);
+			messageToSlave[0] = channels;
+			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = out[c] ? 10.f : 0.0f;
+			//for(int c = 0; c < channels; c++) messageToSlave[c + channels] = messagePresent ? out[c];
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
 	}

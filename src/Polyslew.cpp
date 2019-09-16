@@ -1,6 +1,8 @@
 #include "plugin.hpp"
 
 
+#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 33
+
 struct Polyslew : Module {
 	enum ParamIds {
 		SHAPE_PARAM,
@@ -26,6 +28,11 @@ struct Polyslew : Module {
 		NUM_LIGHTS
 	};
 
+	// Expander
+	float consumerMessage[PASSTHROUGH_RIGHT_VARIABLE_COUNT] = {};// this module must read from here
+	float producerMessage[PASSTHROUGH_RIGHT_VARIABLE_COUNT] = {};// mother will write into here
+
+
 	Polyslew() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam(SHAPE_PARAM, -1.f, 1.f, 0.f, "");
@@ -34,16 +41,37 @@ struct Polyslew : Module {
 		configParam(DOWN_PARAM, 0.f, 1.f, 0.5f, "");
 		configParam(UP_CV_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(DOWN_CV_PARAM, -1.f, 1.f, 0.f, "");
+		
+		leftExpander.producerMessage = producerMessage;
+		leftExpander.consumerMessage = consumerMessage;
 	}
 
 	float out[16] = {0.0};
 
 	void process(const ProcessArgs &args) override {
-		int channels = inputs[IN_INPUT].getChannels();
+
+		//Expander In
+		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelPolyslew);
+		bool messagePresent = false;
+		int messageChannels = 0;
+		float messageClock[16] = {0};
+		float messageCV[16] = {0};
+
+		if(motherPresent && !inputs[IN_INPUT].isConnected())  {
+			float *messagesFromMother = (float*)leftExpander.consumerMessage;
+			messagePresent = messagesFromMother[0] > 0 ? true : false;
+			if (messagePresent){
+				messageChannels = messagesFromMother[0];
+				//for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
+				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + messageChannels];
+			}
+		}
+
+		int channels = messagePresent ? messageChannels : inputs[IN_INPUT].getChannels();
 		outputs[OUT_OUTPUT].setChannels(channels);
 
 		for (int c = 0; c < channels; c++){
-			float in = inputs[IN_INPUT].getVoltage(c);
+			float in = messagePresent ? messageCV[c] : inputs[IN_INPUT].getVoltage(c);
 			float shape = clamp(params[SHAPE_PARAM].getValue() + (inputs[SHAPE_CV].getVoltage() * params[SHAPE_CV_PARAM].getValue()), 0.0f, 1.0f);
 			// minimum and maximum slopes in volts per second
 			const float slewMin = 0.1f;
@@ -69,6 +97,16 @@ struct Polyslew : Module {
 			}
 
 			outputs[OUT_OUTPUT].setVoltage(out[c], c);
+		}
+
+		//Expander Out
+		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing || rightExpander.module->model == modelPolyslew));
+		if(rightExpanderPresent) {
+			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
+			messageToSlave[0] = channels;
+			//for(int c = 0; c < channels; c++) messageToSlave[c + 1] = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
+			for(int c = 0; c < channels; c++) messageToSlave[c + channels] = out[c];
+			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
 	}
 };

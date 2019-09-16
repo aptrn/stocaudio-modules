@@ -2,7 +2,7 @@
 
 
 
-#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 18
+#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 33
 
 struct Clock : Module {
 	enum ParamIds {
@@ -77,32 +77,31 @@ struct Clock : Module {
 	
 
 	void process(const ProcessArgs &args) override{
-		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq);
-	    bool clockConnected = 0;
-		int clockChannels = 0;
-		float clockInput[16] = {0};
-		float motherCv;
+
+		//Expander In
+		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq || leftExpander.module->model == modelPolyslew);
+		bool messagePresent = false;
+		int messageChannels = 0;
+		float messageClock[16] = {0};
+		float messageCV[16] = {0};
 
 		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;
-			clockConnected = messagesFromMother[0];
-			
-			motherCv = messagesFromMother[1];
-			if (clockConnected){
-				clockChannels = messagesFromMother[0];
-				for(int i = 0; i < clockChannels; i++) clockInput[i] = messagesFromMother[i +2];
+			messagePresent = messagesFromMother[0] > 0 ? true : false;
+			if (messagePresent){
+				messageChannels = messagesFromMother[0];
+				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
+				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + messageChannels];
 			}
 		}
 
-		int channels = clockConnected ? clockChannels : inputs[CLOCK_INPUT].getChannels();
-
-
+		int channels = messagePresent ? messageChannels : inputs[CLOCK_INPUT].getChannels();
 
 		float ratio_kn[channels];
 		float ratio[channels];
 
 		for(int c = 0;c < channels; c++){
-			if (motherPresent && !inputs[DIV_CV].isConnected() && leftExpander.module->model == modelPolyturing) ratio_kn[c] = int(params[DIV_PARAM].getValue()) + int(rescale(motherCv, -10.f, 10.f, -9.f, 9.f) * params[DIV_CV_PARAM].getValue());
+			if (motherPresent && !inputs[DIV_CV].isConnected() && leftExpander.module->model == modelPolyturing) ratio_kn[c] = int(params[DIV_PARAM].getValue()) + int(rescale(messageCV[c], -10.f, 10.f, -9.f, 9.f) * params[DIV_CV_PARAM].getValue());
 			else ratio_kn[c] = int(params[DIV_PARAM].getValue()) + int(rescale(inputs[DIV_CV].getVoltage(c), -5.f, 5.f, -9.f, 9.f) * params[DIV_CV_PARAM].getValue());
 			//int jitter = rescale(params[SWING_PARAM].getValue(), 0.f, 1.f, 0, stepGap[c] -1);
 			if (ratio_kn[c]  == 8) clkModulatorMode[c] = X1;
@@ -114,7 +113,7 @@ struct Clock : Module {
 
 
 
-		if (inputs[CLOCK_INPUT].isConnected() || clockConnected) {
+		if (inputs[CLOCK_INPUT].isConnected() || messagePresent) {
 			// Increment step number.
 			currentStep++;
 			
@@ -122,7 +121,7 @@ struct Clock : Module {
 			
 			
 			for (int c = 0; c < channels; c++){
-				float clock = clockConnected ? clockInput[c] : inputs[CLOCK_INPUT].getVoltage(c);
+				float clock = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
 				if (clock_input[c].process(rescale(clock, 0.2f, 1.7f, 0.0f, 1.0f))) {
 					inPulse.trigger(0.1f);
 					if (previousStep[c] == 0) {
@@ -256,13 +255,14 @@ struct Clock : Module {
 			lights[IN_LIGHT].setBrightness(inPulse.process(1.0 / 44100));
 			lights[OUT_LIGHT].setBrightness(outPulse.process(1.0 / 44100));
 		}
-
+		
+		//Expander Out
 		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing || rightExpander.module->model == modelClock || rightExpander.module->model == modelBtnseq || rightExpander.module->model == modelManseq));
 		if(rightExpanderPresent) {
 			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
-			messageToSlave[0] = clockConnected ? clockChannels : inputs[CLOCK_INPUT].getChannels();
-			messageToSlave[1] = channels;
-			for(int i = 0; i < channels; i++) messageToSlave[i + 2] = (sendingOutput[i] ? 10.f : 0.0f);
+			messageToSlave[0] = channels;
+			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = sendingOutput[c] ? 10.f : 0.0f;
+			//for(int c = 0; c < channels; c++) messageToSlave[c + channels] = messagePresent ? out[c];
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
 	}
