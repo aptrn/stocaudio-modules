@@ -117,7 +117,7 @@ struct Manseq : Module {
 			if (messagePresent){
 				messageChannels = messagesFromMother[0];
 				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
-				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + messageChannels];
+				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + 1 + messageChannels];
 			}
 		}
 

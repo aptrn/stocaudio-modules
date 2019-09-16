@@ -63,6 +63,7 @@ struct Polyturing : Module {
     float in, now;
     float out[16];
     float buffer[16][32];
+	float lock;
 
 
 	json_t *dataToJson() override {
@@ -103,9 +104,11 @@ struct Polyturing : Module {
 		//Expander In
 		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq || leftExpander.module->model == modelPolyslew);
 		bool messagePresent = false;
+		bool messageTuring = leftExpander.module && (leftExpander.module->model == modelPolyturing);
 		int messageChannels = 0;
 		float messageClock[16] = {0};
 		float messageCV[16] = {0};
+		float messageLock = 0;
 
 		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;
@@ -113,7 +116,8 @@ struct Polyturing : Module {
 			if (messagePresent){
 				messageChannels = messagesFromMother[0];
 				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
-				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + messageChannels];
+				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + 1 + messageChannels];
+				if (messageTuring) messageLock = messagesFromMother[2 + 2 * messageChannels ];
 			}
 		}
 	
@@ -128,9 +132,10 @@ struct Polyturing : Module {
 					int steps = params[STEP_PARAM].getValue() + (inputs[STEP_CV].getVoltage() * params[STEP_CV_PARAM].getValue()) + (now * params[STEP_RAND_PARAM].getValue());
 					if (currentStep[c] > steps) currentStep[c] = 0; 
 						if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getVoltage(c); 
-						else if (messagePresent && (leftExpander.module->model == modelPolyslew || leftExpander.module->model == modelPolyturing)) in = messageCV[c];
+						else if (messagePresent && (leftExpander.module->model == modelPolyslew)) in = messageCV[c];
 						else in = 2.0 * random::normal();
-						if (random::uniform() > (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()))){
+						lock = messageTuring ? messageLock : (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()));
+						if (random::uniform() > lock){
 							out[c] = in;
 							buffer[c][currentStep[c]] = in;
 							for (int i = currentStep[c] + 1; i < 32; i++) buffer[c][i] = 2 * random::uniform();
@@ -157,6 +162,7 @@ struct Polyturing : Module {
 			messageToSlave[0] = channels;
 			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
 			for(int c = 0; c < channels; c++) messageToSlave[c + channels] = out[c];
+			messageToSlave[2 + 2 * channels] = lock;
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
 	}
