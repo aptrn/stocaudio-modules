@@ -161,7 +161,7 @@ struct Polyturing : Module {
 			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
 			messageToSlave[0] = channels;
 			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
-			for(int c = 0; c < channels; c++) messageToSlave[c + channels] = out[c];
+			for(int c = 0; c < channels; c++) messageToSlave[c + 1 + channels] = out[c];
 			messageToSlave[2 + 2 * channels] = lock;
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
