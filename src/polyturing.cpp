@@ -1,6 +1,6 @@
 #include "plugin.hpp"
 
-#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 33
+#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 34
 
 
 struct Polyturing : Module {
@@ -117,7 +117,7 @@ struct Polyturing : Module {
 				messageChannels = messagesFromMother[0];
 				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
 				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + 1 + messageChannels];
-				if (messageTuring) messageLock = messagesFromMother[2 + 2 * messageChannels ];
+				if (messageTuring) messageLock = messagesFromMother[33];
 			}
 		}
 	
@@ -162,7 +162,7 @@ struct Polyturing : Module {
 			messageToSlave[0] = channels;
 			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
 			for(int c = 0; c < channels; c++) messageToSlave[c + 1 + channels] = out[c];
-			messageToSlave[2 + 2 * channels] = lock;
+			messageToSlave[33] = lock;
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
 	}
