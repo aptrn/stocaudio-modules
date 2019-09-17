@@ -63,7 +63,7 @@ struct Polyslew : Module {
 			if (messagePresent){
 				messageChannels = messagesFromMother[0];
 				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
-				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + messageChannels + 1];
+				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + 1 + messageChannels];
 			}
 		}
 
@@ -105,7 +105,7 @@ struct Polyslew : Module {
 			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
 			messageToSlave[0] = channels;
 			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = messageClock[c];
-			for(int c = 0; c < channels; c++) messageToSlave[c + channels] = out[c];
+			for(int c = 0; c < channels; c++) messageToSlave[c + 1 + channels] = out[c];
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
 	}

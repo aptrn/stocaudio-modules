@@ -64,6 +64,7 @@ struct Polyturing : Module {
     float out[16];
     float buffer[16][32];
 	float lock;
+	float after[16];
 
 
 	json_t *dataToJson() override {
@@ -151,7 +152,8 @@ struct Polyturing : Module {
 			now = out[c];
 			float scale = params[SCALE_PARAM].getValue() + (inputs[SCALE_CV].getVoltage() * params[SCALE_CV_PARAM].getValue()) + (now *  params[SCALE_RAND_PARAM].getValue());
 			float offset = params[OFFSET_PARAM].getValue() + (inputs[OFFSET_CV].getVoltage() * params[OFFSET_CV_PARAM].getValue()) + (now *  params[OFFSET_RAND_PARAM].getValue());
-			outputs[MAIN_OUTPUT].setVoltage((out[c] * scale) + offset, c); 
+			after[c] = (out[c] * scale) + offset;
+			outputs[MAIN_OUTPUT].setVoltage(after[c], c); 
 		}
 		lights[MANUAL_LED].setBrightness(led_pulse.process(1.0 / 44100));
 
@@ -161,7 +163,7 @@ struct Polyturing : Module {
 			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
 			messageToSlave[0] = channels;
 			for(int c = 0; c < channels; c++) messageToSlave[c + 1] = messagePresent ? messageClock[c] : inputs[CLOCK_INPUT].getVoltage(c);
-			for(int c = 0; c < channels; c++) messageToSlave[c + 1 + channels] = out[c];
+			for(int c = 0; c < channels; c++) messageToSlave[c + 1 + channels] = after[c];
 			messageToSlave[33] = lock;
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
