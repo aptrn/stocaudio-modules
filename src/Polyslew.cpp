@@ -1,7 +1,7 @@
 #include "plugin.hpp"
 
 
-#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 33
+#define PASSTHROUGH_RIGHT_VARIABLE_COUNT 34
 
 struct Polyslew : Module {
 	enum ParamIds {
