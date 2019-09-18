@@ -62,8 +62,15 @@ struct Spread : Module {
 			outputs[R_OUTPUT].setVoltage(outputR); 
 		}
 		else{
-			//outputs[SUM_L_OUTPUT].setVoltage(0.f);
-			//outputs[SUM_R_OUTPUT].setVoltage(0.f); 
+			float thisPan = rescale(clamp(spread, -1.f, 1.f), -1.f, 1.f, 0.f, 1.f);
+			if (inputs[R_INPUT].isConnected()){
+				outputs[R_OUTPUT].setVoltage((inputs[L_INPUT].getVoltage() * thisPan) + (inputs[R_INPUT].getVoltage() * (1 - thisPan)));
+				outputs[L_OUTPUT].setVoltage((inputs[R_INPUT].getVoltage() * thisPan) + (inputs[L_INPUT].getVoltage() * (1 - thisPan)));
+			}
+			else {
+				outputs[R_OUTPUT].setVoltage(inputs[L_INPUT].getVoltage() * thisPan);
+				outputs[L_OUTPUT].setVoltage(inputs[L_INPUT].getVoltage() * (1 - thisPan));
+			}
 		}
 	}
 };
