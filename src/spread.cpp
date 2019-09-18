@@ -63,13 +63,16 @@ struct Spread : Module {
 		}
 		else{
 			float thisPan = rescale(clamp(spread, -1.f, 1.f), -1.f, 1.f, 0.f, 1.f);
+			float outputL = inputs[L_INPUT].getVoltage() * ((params[VOLUME_PARAM].getValue() + clamp(inputs[VOLUME_CV].getVoltage() * params[VOLUME_CV_PARAM].getValue(), -10.f, 10.f) / 10.f));
+			float outputR = inputs[R_INPUT].getVoltage() * ((params[VOLUME_PARAM].getValue() + clamp(inputs[VOLUME_CV].getVoltage() * params[VOLUME_CV_PARAM].getValue(), -10.f, 10.f) / 10.f));
+			
 			if (inputs[R_INPUT].isConnected()){
-				outputs[R_OUTPUT].setVoltage((inputs[L_INPUT].getVoltage() * thisPan) + (inputs[R_INPUT].getVoltage() * (1 - thisPan)));
-				outputs[L_OUTPUT].setVoltage((inputs[R_INPUT].getVoltage() * thisPan) + (inputs[L_INPUT].getVoltage() * (1 - thisPan)));
+				outputs[R_OUTPUT].setVoltage((outputL * thisPan) + (outputR * (1 - thisPan)));
+				outputs[L_OUTPUT].setVoltage((outputR * thisPan) + (outputL* (1 - thisPan)));
 			}
 			else {
-				outputs[R_OUTPUT].setVoltage(inputs[L_INPUT].getVoltage() * thisPan);
-				outputs[L_OUTPUT].setVoltage(inputs[L_INPUT].getVoltage() * (1 - thisPan));
+				outputs[R_OUTPUT].setVoltage(outputL * thisPan);
+				outputs[L_OUTPUT].setVoltage(outputL * (1 - thisPan));
 			}
 		}
 	}
