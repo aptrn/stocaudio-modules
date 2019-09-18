@@ -38,7 +38,7 @@ struct Btnseq : Module {
 			configParam(B_PARAM +i, 0.f, 1.f, 0.f, "");
 		}
 		configParam(STEPS_PARAM, 0.f, 8.f, 4.f, "");
-		configParam(ROTATE_PARAM, 0.f, 8.f, 0.f, "");
+		configParam(ROTATE_PARAM, 0.f, 7.f, 0.f, "");
 		configParam(STEPS_CV_PARAM, -1.f, 1.f, 0.f, "");
 		configParam(ROTATE_CV_PARAM, -1.f, 1.f, 0.f, "");
 
@@ -117,7 +117,7 @@ struct Btnseq : Module {
 		}
 
 		int steps = clamp(int(params[STEPS_PARAM].getValue()) + int(params[STEPS_CV_PARAM].getValue() * (inputs[STEPS_CV_INPUT].getVoltage() / 10.f)), 1, 8);
-		int rotate = rescale(clamp(int(params[ROTATE_PARAM].getValue()) + int(params[ROTATE_CV_PARAM].getValue() * (inputs[ROTATE_CV_INPUT].getVoltage() / 10.f)), 0, 7), 0, 7, 0, steps -1);
+		int rotate = clamp(int(params[ROTATE_PARAM].getValue()) + int(params[ROTATE_CV_PARAM].getValue() * (inputs[ROTATE_CV_INPUT].getVoltage() / 10.f)), 0, 7);
 		if (lastRotate != rotate) {
 			for (int c = 0; c < channels; c++){
 				count[c] = 0;
@@ -128,7 +128,7 @@ struct Btnseq : Module {
 		}
 
 		if (reset_input.process(rescale(inputs[RESET_INPUT].getVoltage(), 0.2f, 1.7f, 0.0f, 1.0f)))
-			for(int c = 0; c < channels; c++) current[c] = rotate;
+			for(int c = 0; c < channels; c++) count[c] = -1;
 
 		int firstStep = rotate;
 		int lastStep = (rotate + steps) - 1 % steps;
