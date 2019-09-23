@@ -35,11 +35,7 @@ struct LedLight : BASE {
 };
 
 struct stocLight : ModuleLightWidget {
-	GeoGrayModuleLight() {
-		bgColor = nvgRGB(0x8e, 0x8e, 0x8e);
-		borderColor = nvgRGB(0x1d, 0x1d, 0x1b);//nvgRGBA(0, 0, 0, 0x60);
-	}
-	
+
 	void drawLight(const DrawArgs &args) override { // from app/LightWidget.cpp (only nvgStrokeWidth of border was changed)
 		float radius = (box.size.x / 2.0) +1;
 
