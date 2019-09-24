@@ -9,7 +9,7 @@
   "pluginUrl": "https://github.com/aptrn/stocaudio-modules",
   "manualUrl": "https://github.com/aptrn/stocaudio-modules",
   "sourceUrl": "https://github.com/aptrn/stocaudio-modules",
-  "donateUrl": "paypal.me/aptrn",
+  "donateUrl": "https://paypal.me/aptrn",
   "modules": [
     {
       "slug": "Polyturing",
