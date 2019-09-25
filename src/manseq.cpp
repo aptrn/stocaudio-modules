@@ -94,12 +94,12 @@ struct Manseq : Module {
 	dsp::SchmittTrigger clear_btn;
   	dsp::PulseGenerator ledPulse;
   	dsp::PulseGenerator outPulse[16];
-	bool buffer[16][32] = {0};
-	int currentStep[16] = {0};
-	bool out[16] = {0};
+	bool buffer[16][32] = {};
+	int currentStep[16] = {};
+	bool out[16] = {};
 	bool rec = 0;
-	float a[16] = {0};
-	float b[16] = {0};
+	float a[16] = {};
+	float b[16] = {};
 	int rotate = 0;
 	int steps = 0;
 
@@ -108,8 +108,8 @@ struct Manseq : Module {
 		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq);
 		bool messagePresent = false;
 		int messageChannels = 0;
-		float messageClock[16] = {0};
-		float messageCV[16] = {0};
+		float messageClock[16] = {};
+		float messageCV[16] = {};
 
 		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;

@@ -77,9 +77,9 @@ struct Btnseq : Module {
 	dsp::PulseGenerator ledPulse;
 	dsp::PulseGenerator outPulse[16];
 
-	bool buf[8][16]  = {0};
-	int current[16] = {0};
-	int count[16] = {0};
+	bool buf[8][16]  = {};
+	int current[16] = {};
+	int count[16] = {};
 	int lastRotate = 0;
 
 	
@@ -93,8 +93,8 @@ struct Btnseq : Module {
 		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq);
 		bool messagePresent = false;
 		int messageChannels = 0;
-		float messageClock[16] = {0};
-		float messageCV[16] = {0};
+		float messageClock[16] = {};
+		float messageCV[16] = {};
 
 		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;
@@ -130,8 +130,8 @@ struct Btnseq : Module {
 		if (reset_input.process(rescale(inputs[RESET_INPUT].getVoltage(), 0.2f, 1.7f, 0.0f, 1.0f)))
 			for(int c = 0; c < channels; c++) count[c] = -1;
 
-		int firstStep = rotate;
-		int lastStep = (rotate + steps) - 1 % steps;
+		//int firstStep = rotate;
+		//int lastStep = (rotate + steps) - 1 % steps;
 		
 		if (inputs[CLOCK_INPUT].isConnected() || messagePresent){
 			for(int c = 0; c < channels; c++){

@@ -54,8 +54,8 @@ struct Polyslew : Module {
 		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelPolyslew);
 		bool messagePresent = false;
 		int messageChannels = 0;
-		float messageClock[16] = {0};
-		float messageCV[16] = {0};
+		float messageClock[16] = {};
+		float messageCV[16] = {};
 
 		if(motherPresent && !inputs[IN_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;

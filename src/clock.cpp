@@ -52,13 +52,13 @@ struct Clock : Module {
 	bool sendingOutput[16] = {false};
 	bool canPulse[16] = {false};
 	long long int currentStep = 0;
-	long long int previousStep[16] = {0};
-	long long int expectedStep[16] = {0};
-	long stepGap[16] = {0};
-	long stepGapPrevious[16] = {0};
-	long long int nextPulseStep[16] = {0};
-	bool isSync[16] = {0};
-	bool swing[16] = {0};
+	long long int previousStep[16] = {};
+	long long int expectedStep[16] = {};
+	long stepGap[16] = {};
+	long stepGapPrevious[16] = {};
+	long long int nextPulseStep[16] = {};
+	bool isSync[16] = {};
+	bool swing[16] = {};
 	enum ClkModModeIds {
 		X1,	// work at x1.
 		DIV,	// divider mode.
@@ -68,7 +68,7 @@ struct Clock : Module {
 	//float ratio_list[31] = {64.0f, 32.0f, 24.0f, 16.0f, 15.0f, 12.0f, 10.0f, 9.0f, 8.0f, 7.0f, 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f, 0.5f, 1.0f/3.0f, 0.25f, 0.2f, 1.0f/6.0f, 1.0f/7.0f, 0.125f, 1.0f/9.0f, 0.1f, 1.0f/12.0f, 1.0f/15.0f, 0.0625f, 1.0f/24.0f, 0.03125f, 0.015625f};
 	float ratio_list[17] = {9.0f, 8.0f, 7.0f, 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f, 0.5f, 1.0f/3.0f, 0.25f, 0.2f, 1.0f/6.0f, 1.0f/7.0f, 0.125f, 1.0f/9.0f};
 	int pulseDivCounter[16] = {63};
-	int pulseMultCounter[16] = {0};
+	int pulseMultCounter[16] = {};
 	float time = 1/44100;
 
 	void onSampleRateChange() override {
@@ -82,8 +82,8 @@ struct Clock : Module {
 		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq || leftExpander.module->model == modelPolyslew);
 		bool messagePresent = false;
 		int messageChannels = 0;
-		float messageClock[16] = {0};
-		float messageCV[16] = {0};
+		float messageClock[16] = {};
+		float messageCV[16] = {};
 
 		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
 			float *messagesFromMother = (float*)leftExpander.consumerMessage;

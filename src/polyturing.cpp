@@ -107,8 +107,8 @@ struct Polyturing : Module {
 		bool messagePresent = false;
 		bool messageTuring = leftExpander.module && (leftExpander.module->model == modelPolyturing);
 		int messageChannels = 0;
-		float messageClock[16] = {0};
-		float messageCV[16] = {0};
+		float messageClock[16] = {};
+		float messageCV[16] = {};
 		float messageLock = 0;
 
 		if(motherPresent && !inputs[CLOCK_INPUT].isConnected())  {
