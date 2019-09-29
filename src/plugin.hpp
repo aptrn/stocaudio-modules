@@ -19,7 +19,7 @@ extern Model *modelPolyslew;
 //SCREW
 struct stocScrew : app::SvgScrew {
 	stocScrew() {
-		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/stocScrew.svg")));
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocScrew.svg")));
 		sw->wrap();
 		box.size = sw->box.size;
 	}
@@ -87,7 +87,7 @@ struct stocRedGreenBlueLight : stocLight {
 struct stocButton : app::SvgSwitch {
 	stocButton() {
 		momentary = true;
-		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/stocButton.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocButton.svg")));
 	}
 };
 
@@ -97,7 +97,7 @@ struct stocBigKnob : SVGKnob {
 	stocBigKnob() {
 		minAngle = -0.75*M_PI;
 		maxAngle = 0.75*M_PI;
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/stocBigKnob.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocBigKnob.svg")));
 	}
 };
 
@@ -105,7 +105,7 @@ struct stocKnob : SVGKnob {
 	stocKnob() {
 		minAngle = -0.75*M_PI;
 		maxAngle = 0.75*M_PI;
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/stocKnob.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocKnob.svg")));
 	}
 };
 
@@ -114,7 +114,7 @@ struct stocSnapKnob : SVGKnob {
 		snap = true;
 		minAngle = -0.75*M_PI;
 		maxAngle = 0.75*M_PI;
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/stocKnob.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocKnob.svg")));
 	}
 };
 
@@ -123,7 +123,7 @@ struct stocAttn : SVGKnob {
 	stocAttn() {
 		minAngle = -0.75*M_PI;
 		maxAngle = 0.75*M_PI;
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/stocAttn.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocAttn.svg")));
 	}
 };
 
@@ -131,72 +131,72 @@ struct stocAttn : SVGKnob {
 
 struct aPJackArancione : SVGPort {
 	aPJackArancione() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackarancione.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackarancione.svg")));
 	}
 };
 
 struct aPJackAzzurro : SVGPort {
 	aPJackAzzurro() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackazzurro.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackazzurro.svg")));
 	}
 };
 
 struct aPJackBianco : SVGPort {
 	aPJackBianco() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackbianco.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackbianco.svg")));
 	}
 };
 
 struct aPJackBlu : SVGPort {
 	aPJackBlu() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackblu.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackblu.svg")));
 	}
 };
 
 struct aPJackFux : SVGPort {
 	aPJackFux() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackfux.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackfux.svg")));
 	}
 };
 
 struct aPJackGiallo : SVGPort {
 	aPJackGiallo() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackgiallo.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackgiallo.svg")));
 	}
 };
 
 struct aPJackNero : SVGPort {
 	aPJackNero() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjacknero.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjacknero.svg")));
 	}
 };
 
 struct aPJackRosa : SVGPort {
 	aPJackRosa() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackrosa.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackrosa.svg")));
 	}
 };
 
 struct aPJackRosso : SVGPort {
 	aPJackRosso() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackrosso.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackrosso.svg")));
 	}
 };
 
 struct aPJackTurchese : SVGPort {
 	aPJackTurchese() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackturchese.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackturchese.svg")));
 	}
 };
 
 struct aPJackVerde : SVGPort {
 	aPJackVerde() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackverde.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackverde.svg")));
 	}
 };
 
 struct aPJackViola : SVGPort {
 	aPJackViola() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackviola.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/jack/aPjackviola.svg")));
 	}
 };
