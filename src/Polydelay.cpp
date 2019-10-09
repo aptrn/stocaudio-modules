@@ -81,7 +81,10 @@ struct Polydelay : Module {
 		float mix = clamp(params[MIX_PARAM].getValue() + (params[MIX_CV_PARAM].getValue() * inputs[MIX_CV].getVoltage()), 0.0f, 1.0f);
 		for (int c = 0; c < channels; c++){
 			float in = inputs[L_INPUT].getVoltage(c) + lastL[c] * feedback;
-			float delay  = params[TIME_PARAM].getValue() + (params[TIMEL_CV_PARAM].getValue()   * inputs[TIMEL_CV].getVoltage()   / 5.f);
+			float modulationL;
+			if (!inputs[TIMEL_CV].isConnected()) modulationL = params[TIMEL_CV_PARAM].getValue() * 0.5;
+			else  modulationL = params[TIMEL_CV_PARAM].getValue()   * (inputs[TIMEL_CV].getVoltage()   / 5.f);
+			float delay  = params[TIME_PARAM].getValue() + modulationL;
 			delay = clamp(delay, 0.f, 1.f);
 			delay =  1e-3 * std::pow(10.f / 1e-3, delay);
 			delay += rescale(spread, 0.f, 1.f, 0.f, delay) * c;
@@ -128,7 +131,10 @@ struct Polydelay : Module {
 			float in;
 			if (stereoMode) in = inputs[R_INPUT].getVoltage(c) + lastR[c] * feedback;
 			else in = inputs[L_INPUT].getVoltage(c) + lastR[c] * feedback;
-			float delay  = params[TIME_PARAM].getValue() + (params[TIMER_CV_PARAM].getValue()   * inputs[TIMER_CV].getVoltage()   / 5.f);
+			float modulationL;
+			if (!inputs[TIMER_CV].isConnected()) modulationL = params[TIMER_CV_PARAM].getValue() * 0.5;
+			else  modulationL = params[TIMER_CV_PARAM].getValue()   * (inputs[TIMER_CV].getVoltage()   / 5.f);
+			float delay  = params[TIME_PARAM].getValue() + modulationL;	
 			delay = clamp(delay, 0.f, 1.f);
 			delay =  1e-3 * std::pow(10.f / 1e-3, delay);
 			delay += rescale(spread, 0.f, 1.f, 0.f, delay) * c;
