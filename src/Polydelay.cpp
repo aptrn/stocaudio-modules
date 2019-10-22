@@ -83,7 +83,8 @@ struct Polydelay : Module {
 			float in = inputs[L_INPUT].getVoltage(c) + lastL[c] * feedback;
 			float modulationL;
 			if (!inputs[TIMEL_CV].isConnected()) modulationL = params[TIMEL_CV_PARAM].getValue() * 0.5;
-			else  modulationL = params[TIMEL_CV_PARAM].getValue()   * (inputs[TIMEL_CV].getVoltage()   / 5.f);
+
+			else  modulationL = params[TIMEL_CV_PARAM].getValue()   * (inputs[TIMEL_CV].getVoltage(c)   / 5.f);
 			float delay  = params[TIME_PARAM].getValue() + modulationL;
 			delay = clamp(delay, 0.f, 1.f);
 			delay =  1e-3 * std::pow(10.f / 1e-3, delay);
