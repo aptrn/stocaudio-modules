@@ -16,7 +16,7 @@ This module is a revisited software version of the [Random Looping Sequencer](ht
 This is a polyphonic human driven sequencer and voltage switch.
 
 - Channel number is set by the Clock input
- - For each Clock recieved it steps through the sequence, length is set with the Steps parameter
+- For each Clock received it steps through the sequence, length is set with the Steps parameter
 - Rotate sets the new first step when Reset is triggered
 - Record button activates and deactivates recording
 - Man button sets the current step High or Low when recording
@@ -30,7 +30,7 @@ This is a polyphonic human driven sequencer and voltage switch.
 This is a polyphonic button driven sequencer.
 
 - Channel number is set by the Clock input
- - For each Clock recieved it steps through the sequence, length is set with the Steps parameter
+- For each Clock received it steps through the sequence, length is set with the Steps parameter
 - Rotate sets the new first step when Reset is triggered and offsets the selection of active buttons
 - Sequence buttons set each step as High or Low
 - Trig outputs a trigger for every High step
@@ -74,7 +74,7 @@ This is a polyphonic fork of [Befaco's Slew Limiter](https://github.com/VCVRack/
 ## Expanders
 
 Polyturing, Man Seq, Btn Seq, Polyclock and Polyslew modules do support a cascading expander messaging system.
-Every module recieves data from modules on the left side and send to ones on the right side.
+Every module receives data from modules on the left side and send to ones on the right side.
 - Man Seq, Btn Seq and Polyclock do share output triggers as clock info, Polyturing shares incoming clock
 - Polyturing shares voltage out with Polyclock as prerouted modulation on the Mult/Div parameter and with Polyslew as input
 
