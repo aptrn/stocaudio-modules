@@ -32,7 +32,7 @@ struct Polyturing : Module {
 		NUM_OUTPUTS
 	};
 	enum LightIds {
-		MANUAL_LED,
+		CLOCK_LED,
 		NUM_LIGHTS
 	};
 	// Expander
@@ -41,17 +41,25 @@ struct Polyturing : Module {
 
 	Polyturing() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(LOCK_PARAM, 0.f, 1.f, 0.5f, "");
-		configParam(LOCK_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(SCALE_PARAM, 0.f, 1.f, 0.5f, "");
-		configParam(OFFSET_PARAM, -5.f, 5.f, 0.f, "");
-		configParam(STEP_PARAM, 1.f, 32.f, 16.f, "");
-		configParam(SCALE_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(OFFSET_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(STEP_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(SCALE_RAND_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(OFFSET_RAND_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(STEP_RAND_PARAM, -1.f, 1.f, 0.f, "");
+		configParam(LOCK_PARAM, 0.f, 1.f, 0.5f, "Lock sequence");
+		configParam(LOCK_CV_PARAM, -1.f, 1.f, 0.f, "Lock CV amount");
+		configParam(SCALE_PARAM, 0.f, 1.f, 0.5f, "Amplitude scale");
+		configParam(OFFSET_PARAM, -5.f, 5.f, 0.f, "Voltage offset");
+		configParam(STEP_PARAM, 1, 32, 16, "Sequence steps");
+		configParam(SCALE_CV_PARAM, -1.f, 1.f, 0.f, "Scale CV amount");
+		configParam(OFFSET_CV_PARAM, -1.f, 1.f, 0.f, "Offset CV amount");
+		configParam(STEP_CV_PARAM, -1.f, 1.f, 0.f, "Steps CV amount");
+		configParam(SCALE_RAND_PARAM, -1.f, 1.f, 0.f, "Scale sequence amount");
+		configParam(OFFSET_RAND_PARAM, -1.f, 1.f, 0.f, "Offset sequence amount");
+		configParam(STEP_RAND_PARAM, -1.f, 1.f, 0.f, "Steps sequence amount");
+		configInput(MAIN_INPUT, "Sampled input");
+		configInput(CLOCK_INPUT, "Clock input");
+		configInput(LOCK_CV, "Lock CV");
+		configInput(SCALE_CV, "Scale CV");
+		configInput(OFFSET_CV, "Offset CV");
+		configInput(STEP_CV, "Steps CV");
+		configOutput(MAIN_OUTPUT, "CV output");
+		configLight(CLOCK_LED, "Clock LED");
 
 		leftExpander.producerMessage = producerMessage;
 		leftExpander.consumerMessage = consumerMessage;
@@ -60,6 +68,7 @@ struct Polyturing : Module {
 	dsp::SchmittTrigger clock_input[16];
 	dsp::PulseGenerator led_pulse;
 	int currentStep[32];
+	int oldChannels = 1;
     float in, now;
     float out[16];
     float buffer[16][32];
@@ -103,9 +112,8 @@ struct Polyturing : Module {
 	void process(const ProcessArgs &args) override{
 
 		//Expander In
-		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing || leftExpander.module->model == modelClock || leftExpander.module->model == modelBtnseq || leftExpander.module->model == modelManseq || leftExpander.module->model == modelPolyslew);
+		bool motherPresent = leftExpander.module && (leftExpander.module->model == modelPolyturing);
 		bool messagePresent = false;
-		bool messageTuring = leftExpander.module && (leftExpander.module->model == modelPolyturing);
 		int messageChannels = 0;
 		float messageClock[16] = {};
 		float messageCV[16] = {};
@@ -118,11 +126,23 @@ struct Polyturing : Module {
 				messageChannels = messagesFromMother[0];
 				for(int i = 0; i < messageChannels; i++) messageClock[i] = messagesFromMother[i + 1];
 				for(int i = 0; i < messageChannels; i++) messageCV[i] = messagesFromMother[i + 1 + messageChannels];
-				if (messageTuring) messageLock = messagesFromMother[33];
+				messageLock = messagesFromMother[33];
 			}
 		}
 	
-		int channels =  messagePresent ? messageChannels : inputs[CLOCK_INPUT].getChannels();
+		int channels =  messagePresent ? messageChannels : std::max(inputs[CLOCK_INPUT].getChannels(), inputs[MAIN_INPUT].getChannels());
+
+		if(channels > oldChannels){ //seed sequence for newly added channels
+			for(int c = oldChannels; c < channels; c++){
+				for(int s = 0; s < 32; s++){
+					if (inputs[MAIN_INPUT].isConnected()) buffer[c][s] = buffer[0][s];
+					else {
+						buffer[c][s] = random::uniform() * 2;
+					}
+				}
+			}
+		}
+		
 		outputs[MAIN_OUTPUT].setChannels(channels);
 		if (messagePresent || inputs[CLOCK_INPUT].isConnected()){
 			for (int c = 0; c < channels; c++){
@@ -130,12 +150,11 @@ struct Polyturing : Module {
 				if (clock_input[c].process(rescale(clock, 0.2f, 1.7f, 0.0f, 1.0f))){
 					led_pulse.trigger(0.1f);
 					currentStep[c]++;
-					int steps = params[STEP_PARAM].getValue() + (inputs[STEP_CV].getVoltage() * params[STEP_CV_PARAM].getValue()) + (now * params[STEP_RAND_PARAM].getValue());
+					int steps = (params[STEP_PARAM].getValue() -1) + (inputs[STEP_CV].getVoltage() * params[STEP_CV_PARAM].getValue()) + (now * params[STEP_RAND_PARAM].getValue());
 					if (currentStep[c] > steps) currentStep[c] = 0; 
-						if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getVoltage(c); 
-						else if (messagePresent && (leftExpander.module->model == modelPolyslew)) in = messageCV[c];
+						if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getVoltage(c % inputs[MAIN_INPUT].getChannels()); 
 						else in = 2.0 * random::normal();
-						lock = messageTuring ? messageLock : (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()));
+						lock = messagePresent ? messageLock : (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()));
 						if (random::uniform() > lock){
 							out[c] = in;
 							buffer[c][currentStep[c]] = in;
@@ -155,10 +174,10 @@ struct Polyturing : Module {
 			after[c] = (out[c] * scale) + offset;
 			outputs[MAIN_OUTPUT].setVoltage(after[c], c); 
 		}
-		lights[MANUAL_LED].setBrightness(led_pulse.process(1.0 / 44100));
+		lights[CLOCK_LED].setBrightness(led_pulse.process(1.0 / 44100));
 
 		//Expander Out
-		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing || rightExpander.module->model == modelClock || rightExpander.module->model == modelBtnseq || rightExpander.module->model == modelManseq || rightExpander.module->model == modelPolyslew));
+		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing));
 		if(rightExpanderPresent) {
 			float *messageToSlave = (float*) rightExpander.module->leftExpander.producerMessage;
 			messageToSlave[0] = channels;
@@ -167,6 +186,7 @@ struct Polyturing : Module {
 			messageToSlave[33] = lock;
 			rightExpander.module->leftExpander.messageFlipRequested = true;
 		}
+		oldChannels = channels;
 	}
 };
 
@@ -200,7 +220,7 @@ struct PolyturingWidget : ModuleWidget {
 
 		addOutput(createOutputCentered<aPJackTurchese>(mm2px(Vec(20.496, 119.635)), module, Polyturing::MAIN_OUTPUT));
 
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(20.429, 22.871)), module, Polyturing::MANUAL_LED));
+		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(20.429, 22.871)), module, Polyturing::CLOCK_LED));
 
 	}
 };
