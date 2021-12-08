@@ -44,14 +44,22 @@ struct Polydelay : Module {
 
 	Polydelay() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(TIME_PARAM, 0.f, 1.f, 0.5f, "");
-		configParam(TIMEL_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(TIMER_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(SPREAD_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(MIX_PARAM, 0.f, 1.f, 0.5f, "");
-		configParam(FEED_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(MIX_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(FEED_CV_PARAM, -1.f, 1.f, 0.f, "");
+		configParam(TIME_PARAM, 0.f, 1.f, 0.5f, "Delay Time");
+		configParam(TIMEL_CV_PARAM, -1.f, 1.f, 0.f, "Time CV amount Left");
+		configParam(TIMER_CV_PARAM, -1.f, 1.f, 0.f, "Time CV amount Right");
+		configParam(SPREAD_PARAM, 0.f, 1.f, 0.f, "Poly Time Spread");
+		configParam(MIX_PARAM, 0.f, 1.f, 0.5f, "Dry/Wet Mix");
+		configParam(FEED_PARAM, -1.f, 1.f, 0.f, "Feedback amount");
+		configParam(MIX_CV_PARAM, -1.f, 1.f, 0.f, "Dry/Wet CV amount");
+		configParam(FEED_CV_PARAM, -1.f, 1.f, 0.f, "Feedback CV amount");
+		configInput(L_INPUT, "Left Input");
+		configInput(R_INPUT, "Right Input");
+		configInput(TIMEL_CV, "Time CV Left");
+		configInput(TIMER_CV, "Time CV Right");
+		configInput(MIX_CV, "Dry/Wet CV");
+		configInput(FEED_CV, "Feedback CV");
+		configOutput(OUTL_OUTPUT, "Left Output");
+		configOutput(OUTR_OUTPUT, "Right Output");
 
 		for (int c = 0; c < 16; c++){
 			srcL[c] = src_new(SRC_SINC_FASTEST, 1, NULL);
@@ -77,14 +85,15 @@ struct Polydelay : Module {
 		else outputs[OUTR_OUTPUT].setChannels(channels);	
 		
 		float spread = params[SPREAD_PARAM].getValue();
-		float feedback = params[FEED_PARAM].getValue() + (params[FEED_CV_PARAM].getValue() * inputs[FEED_CV].getVoltage());
 		float mix = clamp(params[MIX_PARAM].getValue() + (params[MIX_CV_PARAM].getValue() * inputs[MIX_CV].getVoltage()), 0.0f, 1.0f);
+		
 		for (int c = 0; c < channels; c++){
+			float feedback = params[FEED_PARAM].getValue() + (params[FEED_CV_PARAM].getValue() * inputs[FEED_CV].getVoltage(c % (inputs[FEED_CV].getChannels())));
 			float in = inputs[L_INPUT].getVoltage(c) + lastL[c] * feedback;
 			float modulationL;
 			if (!inputs[TIMEL_CV].isConnected()) modulationL = params[TIMEL_CV_PARAM].getValue() * 0.5;
 
-			else  modulationL = params[TIMEL_CV_PARAM].getValue()   * (inputs[TIMEL_CV].getVoltage(c)   / 5.f);
+			else  modulationL = params[TIMEL_CV_PARAM].getValue() * (inputs[TIMEL_CV].getVoltage(c % inputs[TIMEL_CV].getChannels()) / 10.f);
 			float delay  = params[TIME_PARAM].getValue() + modulationL;
 			delay = clamp(delay, 0.f, 1.f);
 			delay =  1e-3 * std::pow(10.f / 1e-3, delay);
@@ -129,12 +138,13 @@ struct Polydelay : Module {
 		}
 
 		for (int c = 0; c < channels; c++){
+			float feedback = params[FEED_PARAM].getValue() + (params[FEED_CV_PARAM].getValue() * inputs[FEED_CV].getVoltage(c % (inputs[FEED_CV].getChannels())));
 			float in;
 			if (stereoMode) in = inputs[R_INPUT].getVoltage(c) + lastR[c] * feedback;
 			else in = inputs[L_INPUT].getVoltage(c) + lastR[c] * feedback;
 			float modulationL;
 			if (!inputs[TIMER_CV].isConnected()) modulationL = params[TIMER_CV_PARAM].getValue() * 0.5;
-			else  modulationL = params[TIMER_CV_PARAM].getValue()   * (inputs[TIMER_CV].getVoltage()   / 5.f);
+			else  modulationL = params[TIMER_CV_PARAM].getValue() * (inputs[TIMER_CV].getVoltage(c % inputs[TIMER_CV].getChannels()) / 10.f);
 			float delay  = params[TIME_PARAM].getValue() + modulationL;	
 			delay = clamp(delay, 0.f, 1.f);
 			delay =  1e-3 * std::pow(10.f / 1e-3, delay);

@@ -27,10 +27,16 @@ struct Spread : Module {
 
 	Spread() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(STEREO_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(STEREO_CV_PARAM, -1.f, 1.f, 0.f, "");
-		configParam(VOLUME_PARAM, 0.f, 1.f, 1.f, "");
-		configParam(VOLUME_CV_PARAM, -1.f, 1.f, 0.f, "");
+		configParam(STEREO_PARAM, -1.f, 1.f, 0.f, "Stereo spread");
+		configParam(STEREO_CV_PARAM, -1.f, 1.f, 0.f, "Stereo spread CV amount");
+		configParam(VOLUME_PARAM, 0.f, 1.f, 1.f, "VCA volume");
+		configParam(VOLUME_CV_PARAM, -1.f, 1.f, 0.f, "VCA volume CV amount");
+		configInput(L_INPUT, "Left audio input");
+		configInput(R_INPUT, "Right audio input");
+		configInput(STEREO_CV, "Stereo spread CV");
+		configInput(VOLUME_CV, "VCA volume CV");
+		configOutput(L_OUTPUT, "Left audio output");
+		configOutput(R_OUTPUT, "Right audio output");
 	}
 
 	float outl[16];
