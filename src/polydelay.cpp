@@ -88,12 +88,12 @@ struct Polydelay : Module {
 		float mix = clamp(params[MIX_PARAM].getValue() + (params[MIX_CV_PARAM].getValue() * inputs[MIX_CV].getVoltage()), 0.0f, 1.0f);
 		
 		for (int c = 0; c < channels; c++){
-			float feedback = params[FEED_PARAM].getValue() + (params[FEED_CV_PARAM].getValue() * inputs[FEED_CV].getVoltage(c % (inputs[FEED_CV].getChannels())));
+			float feedback = params[FEED_PARAM].getValue() + (params[FEED_CV_PARAM].getValue() * inputs[FEED_CV].getPolyVoltage(c));
 			float in = inputs[L_INPUT].getVoltage(c) + lastL[c] * feedback;
 			float modulationL;
 			if (!inputs[TIMEL_CV].isConnected()) modulationL = params[TIMEL_CV_PARAM].getValue() * 0.5;
 
-			else  modulationL = params[TIMEL_CV_PARAM].getValue() * (inputs[TIMEL_CV].getVoltage(c % inputs[TIMEL_CV].getChannels()) / 10.f);
+			else  modulationL = params[TIMEL_CV_PARAM].getValue() * (inputs[TIMEL_CV].getPolyVoltage(c) / 10.f);
 			float delay  = params[TIME_PARAM].getValue() + modulationL;
 			delay = clamp(delay, 0.f, 1.f);
 			delay =  1e-3 * std::pow(10.f / 1e-3, delay);
@@ -138,13 +138,13 @@ struct Polydelay : Module {
 		}
 
 		for (int c = 0; c < channels; c++){
-			float feedback = params[FEED_PARAM].getValue() + (params[FEED_CV_PARAM].getValue() * inputs[FEED_CV].getVoltage(c % (inputs[FEED_CV].getChannels())));
+			float feedback = params[FEED_PARAM].getValue() + (params[FEED_CV_PARAM].getValue() * inputs[FEED_CV].getVoltage(c));
 			float in;
 			if (stereoMode) in = inputs[R_INPUT].getVoltage(c) + lastR[c] * feedback;
 			else in = inputs[L_INPUT].getVoltage(c) + lastR[c] * feedback;
 			float modulationL;
 			if (!inputs[TIMER_CV].isConnected()) modulationL = params[TIMER_CV_PARAM].getValue() * 0.5;
-			else  modulationL = params[TIMER_CV_PARAM].getValue() * (inputs[TIMER_CV].getVoltage(c % inputs[TIMER_CV].getChannels()) / 10.f);
+			else  modulationL = params[TIMER_CV_PARAM].getValue() * inputs[TIMER_CV].getVoltage(c);
 			float delay  = params[TIME_PARAM].getValue() + modulationL;	
 			delay = clamp(delay, 0.f, 1.f);
 			delay =  1e-3 * std::pow(10.f / 1e-3, delay);
