@@ -152,16 +152,16 @@ struct Polyturing : Module {
 					currentStep[c]++;
 					int steps = (params[STEP_PARAM].getValue() -1) + (inputs[STEP_CV].getVoltage() * params[STEP_CV_PARAM].getValue()) + (now * params[STEP_RAND_PARAM].getValue());
 					if (currentStep[c] > steps) currentStep[c] = 0; 
-						if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getVoltage(c % inputs[MAIN_INPUT].getChannels()); 
-						else in = 2.0 * random::normal();
-						lock = messagePresent ? messageLock : (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()));
-						if (random::uniform() > lock){
-							out[c] = in;
-							buffer[c][currentStep[c]] = in;
-							for (int i = currentStep[c] + 1; i < 32; i++) buffer[c][i] = 2 * random::uniform();
-						}
-						else{
-							out[c] = buffer[c][currentStep[c]];
+					if (inputs[MAIN_INPUT].isConnected()) in = inputs[MAIN_INPUT].getPolyVoltage(c); 
+					else in = 2.0 * random::normal();
+					lock = messagePresent ? messageLock : (params[LOCK_PARAM].getValue() + (inputs[LOCK_CV].getVoltage() * params[LOCK_CV_PARAM].getValue()));
+					if (random::uniform() > lock){
+						out[c] = in;
+						buffer[c][currentStep[c]] = in;
+						for (int i = currentStep[c] + 1; i < 32; i++) buffer[c][i] = 2 * random::uniform();
+					}
+					else{
+						out[c] = buffer[c][currentStep[c]];
 					}    
 				}
 			}
@@ -174,7 +174,7 @@ struct Polyturing : Module {
 			after[c] = (out[c] * scale) + offset;
 			outputs[MAIN_OUTPUT].setVoltage(after[c], c); 
 		}
-		lights[CLOCK_LED].setBrightness(led_pulse.process(1.0 / 44100));
+		lights[CLOCK_LED].setBrightness(led_pulse.process(args.sampleTime));
 
 		//Expander Out
 		bool rightExpanderPresent = (rightExpander.module && (rightExpander.module->model == modelPolyturing));

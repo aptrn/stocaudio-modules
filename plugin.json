@@ -43,6 +43,19 @@
         "Utility",
         "Polyphonic"
       ]
+    },
+    {
+      "slug": "polyBurst",
+      "name": "polyBurst",
+      "description": "Polyphonic burst generator",
+      "tags": [
+        "Clock modulator",
+        "Envelope generator",
+        "Function generator",
+        "Polyphonic",
+        "Random",
+        "Utility"
+      ]
     }
   ]
 }

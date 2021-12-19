@@ -8,6 +8,7 @@ extern Plugin *pluginInstance;
 extern Model *modelPolyturing;
 extern Model *modelPolydelay;
 extern Model *modelSpread;
+extern Model *modelPolyBurst;
 
 // Declare each Model, defined in each module source file
 // extern Model *modelMyModule;
@@ -80,9 +81,15 @@ struct stocRedGreenBlueLight : stocLight {
 };
 
 //BUTTON
+struct stocButtonMom : app::SvgSwitch {
+	stocButtonMom() {
+		momentary = true;
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocButton.svg")));
+	}
+};
 struct stocButton : app::SvgSwitch {
 	stocButton() {
-		momentary = true;
+		momentary = false;
 		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/stocButton.svg")));
 	}
 };
@@ -105,6 +112,14 @@ struct stocKnob : SVGKnob {
 	}
 };
 
+struct newKnob : SVGKnob {
+	newKnob() {
+		minAngle = -0.75*M_PI;
+		maxAngle = 0.75*M_PI;
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/newKnob.svg")));
+	}
+};
+
 struct stocSnapKnob : SVGKnob {
 	stocSnapKnob() {
 		snap = true;
@@ -123,7 +138,21 @@ struct stocAttn : SVGKnob {
 	}
 };
 
+struct newAttn : SVGKnob {
+	newAttn() {
+		minAngle = -0.75*M_PI;
+		maxAngle = 0.75*M_PI;
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/newAttn.svg")));
+	}
+};
+
 /////JACKS
+
+struct newJack : SVGPort {
+	newJack() {
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comp/newJack.svg")));
+	}
+};
 
 struct aPJackArancione : SVGPort {
 	aPJackArancione() {
