@@ -9,6 +9,7 @@ extern Model *modelPolyturing;
 extern Model *modelPolydelay;
 extern Model *modelSpread;
 extern Model *modelPolyBurst;
+extern Model *modelSampler;
 
 // Declare each Model, defined in each module source file
 // extern Model *modelMyModule;
